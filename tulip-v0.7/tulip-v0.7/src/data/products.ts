@@ -1,0 +1,603 @@
+export type Gender = 'Men' | 'Women' | 'Boys' | 'Girls' | 'Unisex';
+export type MasterCategory = 'Apparel' | 'Accessories' | 'Footwear' | 'Personal Care' | 'Skincare';
+export type Season = 'Summer' | 'Fall' | 'Winter' | 'Spring';
+export type Usage = 'Casual' | 'Ethnic' | 'Formal' | 'Sports' | 'Smart Casual' | 'Travel' | 'Party';
+
+export interface Product {
+  id: string;
+  name: string;
+  brand: string;
+  price: number;
+  originalPrice?: number;
+  image: string;
+  hoverImage?: string;
+  gender: Gender;
+  masterCategory: MasterCategory;
+  subCategory: string;
+  articleType: string;
+  baseColour: string;
+  season: Season;
+  year: number;
+  usage: Usage;
+  category: 'men' | 'women' | 'kids' | 'accessories' | 'footwear' | 'beauty' | 'skincare';
+  rating: number;
+  reviews: number;
+  isNew?: boolean;
+  isTrending?: boolean;
+  isAIPick?: boolean;
+  colors?: string[];
+  sizes?: string[];
+  description?: string;
+  material?: string;
+  fit?: string;
+  skinType?: string;
+  notableEffects?: string;
+}
+
+// Dynamic import — Vite will code-split the 13.5 MB JSON into a separate chunk
+// loaded only when products are first accessed, not on initial page load.
+let _cachedProducts: Product[] | null = null;
+let _loadPromise: Promise<Product[]> | null = null;
+
+const loadTulipData = async (): Promise<Product[]> => {
+  try {
+    const module = await import('./tulipProducts.json');
+    const data = module.default;
+    if (data && Array.isArray(data) && data.length > 0) {
+      console.log(`✅ Loaded ${data.length} products from Tulip dataset`);
+      return data as Product[];
+    }
+  } catch (error) {
+    console.warn('⚠️ Could not load Tulip dataset, using sample data:', error);
+  }
+  return fallbackProducts;
+};
+
+/**
+ * Synchronous access to the cached product catalog.
+ * Starts with fallback products, and mutates in-place when the full catalog is loaded.
+ * Call `ensureProductsLoaded()` early (e.g. in App init) for best UX.
+ */
+export const products: Product[] = [];
+
+/** Await this to ensure the full catalog is loaded before use. */
+export const ensureProductsLoaded = async (): Promise<Product[]> => {
+  if (_cachedProducts) return products;
+  if (!_loadPromise) {
+    _loadPromise = loadTulipData().then((data) => {
+      _cachedProducts = data;
+      // Mutate the existing exported array so all references see the new data
+      products.length = 0;
+      // Push in chunks to prevent 'Maximum call stack size exceeded' on 20k+ items
+      for (let i = 0; i < data.length; i += 5000) {
+        products.push(...data.slice(i, i + 5000));
+      }
+      return products;
+    });
+  }
+  return _loadPromise;
+};
+
+// Fallback sample products (less than 10 for quick loading)
+const fallbackProducts: Product[] = [
+  {
+    id: '1',
+    name: 'Blush Silk Midi Dress',
+    brand: 'TULIP ATELIER',
+    price: 389,
+    originalPrice: 520,
+    image: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=800&q=80',
+    hoverImage: 'https://images.unsplash.com/photo-1566174053879-31528523f8ae?w=800&q=80',
+    gender: 'Women',
+    masterCategory: 'Apparel',
+    subCategory: 'Dress',
+    articleType: 'Dresses',
+    baseColour: 'Pink',
+    season: 'Spring',
+    year: 2026,
+    usage: 'Party',
+    category: 'women',
+    rating: 4.9,
+    reviews: 234,
+    isTrending: true,
+    isAIPick: true,
+    colors: ['#F8C8DC', '#1a1a1a', '#E8B4B8'],
+    sizes: ['XS', 'S', 'M', 'L'],
+    description: 'Flowing silk midi dress in our signature blush shade.',
+    material: 'Pure Silk',
+    fit: 'Flowing',
+  },
+  {
+    id: '2',
+    name: 'Tailored Linen Blazer',
+    brand: 'BLOOM & CO',
+    price: 295,
+    image: 'https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=800&q=80',
+    hoverImage: 'https://images.unsplash.com/photo-1593030761757-71fae45fa0e7?w=800&q=80',
+    gender: 'Men',
+    masterCategory: 'Apparel',
+    subCategory: 'Topwear',
+    articleType: 'Blazers',
+    baseColour: 'Beige',
+    season: 'Spring',
+    year: 2026,
+    usage: 'Smart Casual',
+    category: 'men',
+    rating: 4.7,
+    reviews: 156,
+    isNew: true,
+    colors: ['#E8DCC8', '#1a1a1a', '#6b5b4f'],
+    sizes: ['S', 'M', 'L', 'XL'],
+    description: 'Relaxed linen blazer for effortless elegance.',
+    material: 'Belgian Linen',
+    fit: 'Relaxed',
+  },
+  {
+    id: '3',
+    name: 'Rose Petal Heels',
+    brand: 'PÉTALE',
+    price: 245,
+    originalPrice: 320,
+    image: 'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=800&q=80',
+    gender: 'Women',
+    masterCategory: 'Footwear',
+    subCategory: 'Shoes',
+    articleType: 'Heels',
+    baseColour: 'Pink',
+    season: 'Spring',
+    year: 2026,
+    usage: 'Party',
+    category: 'footwear',
+    rating: 4.8,
+    reviews: 89,
+    isTrending: true,
+    colors: ['#F8C8DC', '#E8B4B8'],
+    sizes: ['36', '37', '38', '39', '40'],
+    description: 'Delicate rose-toned heels for special moments.',
+    material: 'Satin',
+  },
+  {
+    id: '4',
+    name: 'Cotton Candy Cardigan',
+    brand: 'TULIP ATELIER',
+    price: 175,
+    image: 'https://images.unsplash.com/photo-1434389677669-e08b4cda3a90?w=800&q=80',
+    gender: 'Women',
+    masterCategory: 'Apparel',
+    subCategory: 'Topwear',
+    articleType: 'Cardigans',
+    baseColour: 'Pink',
+    season: 'Fall',
+    year: 2026,
+    usage: 'Casual',
+    category: 'women',
+    rating: 4.6,
+    reviews: 198,
+    isNew: true,
+    isAIPick: true,
+    colors: ['#FFB6C1', '#FFF0F5', '#E8B4B8'],
+    sizes: ['XS', 'S', 'M', 'L', 'XL'],
+    description: 'Soft knit cardigan in dreamy pastel tones.',
+    material: 'Cashmere Blend',
+    fit: 'Oversized',
+  },
+  {
+    id: '5',
+    name: 'Classic Leather Jacket',
+    brand: 'BLOOM & CO',
+    price: 450,
+    image: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800&q=80',
+    hoverImage: 'https://images.unsplash.com/photo-1520975954732-35dd22299614?w=800&q=80',
+    gender: 'Men',
+    masterCategory: 'Apparel',
+    subCategory: 'Topwear',
+    articleType: 'Jackets',
+    baseColour: 'Black',
+    season: 'Fall',
+    year: 2026,
+    usage: 'Casual',
+    category: 'men',
+    rating: 4.8,
+    reviews: 312,
+    isTrending: true,
+    colors: ['#1a1a1a', '#3d2b1f'],
+    sizes: ['S', 'M', 'L', 'XL'],
+    description: 'Hand-crafted leather jacket with timeless appeal.',
+    material: 'Lambskin Leather',
+    fit: 'Regular',
+  },
+  {
+    id: '6',
+    name: 'Velvet Party Dress',
+    brand: 'PETITE FLEUR',
+    price: 125,
+    image: 'https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?w=800&q=80',
+    gender: 'Girls',
+    masterCategory: 'Apparel',
+    subCategory: 'Dress',
+    articleType: 'Dresses',
+    baseColour: 'Burgundy',
+    season: 'Winter',
+    year: 2026,
+    usage: 'Party',
+    category: 'kids',
+    rating: 4.9,
+    reviews: 67,
+    isNew: true,
+    colors: ['#800020', '#F8C8DC'],
+    sizes: ['2Y', '4Y', '6Y', '8Y'],
+    description: 'Adorable velvet dress for little ones.',
+    material: 'Premium Velvet',
+  },
+  {
+    id: '7',
+    name: 'Pearl Drop Earrings',
+    brand: 'TULIP BIJOUX',
+    price: 165,
+    image: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=800&q=80',
+    gender: 'Women',
+    masterCategory: 'Accessories',
+    subCategory: 'Jewellery',
+    articleType: 'Earrings',
+    baseColour: 'Gold',
+    season: 'Spring',
+    year: 2026,
+    usage: 'Party',
+    category: 'accessories',
+    rating: 4.7,
+    reviews: 145,
+    isTrending: true,
+    isAIPick: true,
+    colors: ['#F8C8DC', '#FFF8DC'],
+    description: 'Elegant pearl earrings with rose gold finish.',
+    material: 'Rose Gold Plated',
+  },
+  {
+    id: '8',
+    name: 'Hydrating Rose Serum',
+    brand: 'TULIP GLOW',
+    price: 85,
+    image: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=800&q=80',
+    gender: 'Unisex',
+    masterCategory: 'Personal Care',
+    subCategory: 'Skin',
+    articleType: 'Serum',
+    baseColour: 'Pink',
+    season: 'Spring',
+    year: 2026,
+    usage: 'Casual',
+    category: 'beauty',
+    rating: 4.8,
+    reviews: 523,
+    isTrending: true,
+    isAIPick: true,
+    description: 'Rose-infused serum with hyaluronic acid for dewy skin.',
+  },
+  {
+    id: '9',
+    name: 'Structured Tote Bag',
+    brand: 'PÉTALE',
+    price: 320,
+    originalPrice: 420,
+    image: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=800&q=80',
+    hoverImage: 'https://images.unsplash.com/photo-1591561954557-26941169b49e?w=800&q=80',
+    gender: 'Women',
+    masterCategory: 'Accessories',
+    subCategory: 'Bags',
+    articleType: 'Handbags',
+    baseColour: 'Blush',
+    season: 'Spring',
+    year: 2026,
+    usage: 'Smart Casual',
+    category: 'accessories',
+    rating: 4.9,
+    reviews: 278,
+    isNew: true,
+    colors: ['#F8C8DC', '#1a1a1a', '#E8DCC8'],
+    description: 'Iconic structured tote in soft blush leather.',
+    material: 'Saffiano Leather',
+  },
+  {
+    id: '10',
+    name: 'Organic Cotton Tee',
+    brand: 'PETITE FLEUR',
+    price: 55,
+    image: 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=800&q=80',
+    gender: 'Boys',
+    masterCategory: 'Apparel',
+    subCategory: 'Topwear',
+    articleType: 'Tshirts',
+    baseColour: 'White',
+    season: 'Summer',
+    year: 2026,
+    usage: 'Casual',
+    category: 'kids',
+    rating: 4.7,
+    reviews: 189,
+    isNew: true,
+    colors: ['#FFFFFF', '#F8C8DC', '#87CEEB'],
+    sizes: ['2Y', '4Y', '6Y', '8Y', '10Y'],
+    description: 'Soft organic cotton for little adventurers.',
+    material: 'Organic Cotton',
+  },
+  {
+    id: '11',
+    name: 'Italian Suede Loafers',
+    brand: 'BLOOM & CO',
+    price: 285,
+    image: 'https://images.unsplash.com/photo-1614252369475-531eba835eb1?w=800&q=80',
+    gender: 'Men',
+    masterCategory: 'Footwear',
+    subCategory: 'Shoes',
+    articleType: 'Loafers',
+    baseColour: 'Brown',
+    season: 'Spring',
+    year: 2026,
+    usage: 'Smart Casual',
+    category: 'footwear',
+    rating: 4.6,
+    reviews: 134,
+    colors: ['#3d2b1f', '#1a1a1a'],
+    sizes: ['40', '41', '42', '43', '44', '45'],
+    description: 'Handcrafted Italian suede loafers.',
+    material: 'Italian Suede',
+  },
+  {
+    id: '12',
+    name: 'Floral Wrap Skirt',
+    brand: 'TULIP ATELIER',
+    price: 145,
+    image: 'https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?w=800&q=80',
+    gender: 'Women',
+    masterCategory: 'Apparel',
+    subCategory: 'Bottomwear',
+    articleType: 'Skirts',
+    baseColour: 'Pink',
+    season: 'Summer',
+    year: 2026,
+    usage: 'Casual',
+    category: 'women',
+    rating: 4.5,
+    reviews: 112,
+    isAIPick: true,
+    colors: ['#F8C8DC', '#FFB6C1', '#FFF0F5'],
+    sizes: ['XS', 'S', 'M', 'L'],
+    description: 'Feminine wrap skirt in hand-painted florals.',
+    material: 'Chiffon',
+    fit: 'A-Line',
+  },
+  {
+    id: '13',
+    name: 'Rose Lip Tint Set',
+    brand: 'TULIP GLOW',
+    price: 48,
+    image: 'https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=800&q=80',
+    gender: 'Unisex',
+    masterCategory: 'Personal Care',
+    subCategory: 'Lips',
+    articleType: 'Lip Color',
+    baseColour: 'Pink',
+    season: 'Spring',
+    year: 2026,
+    usage: 'Casual',
+    category: 'beauty',
+    rating: 4.9,
+    reviews: 672,
+    isTrending: true,
+    description: 'Natural rose-tinted lip colors in three dreamy shades.',
+  },
+  {
+    id: '14',
+    name: 'Linen Summer Shirt',
+    brand: 'BLOOM & CO',
+    price: 135,
+    image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=800&q=80',
+    gender: 'Men',
+    masterCategory: 'Apparel',
+    subCategory: 'Topwear',
+    articleType: 'Shirts',
+    baseColour: 'White',
+    season: 'Summer',
+    year: 2026,
+    usage: 'Casual',
+    category: 'men',
+    rating: 4.5,
+    reviews: 98,
+    colors: ['#FFFFFF', '#E8DCC8'],
+    sizes: ['S', 'M', 'L', 'XL'],
+    description: 'Breathable linen shirt for warm days.',
+    material: 'Belgian Linen',
+    fit: 'Relaxed',
+  },
+  {
+    id: '15',
+    name: 'Charm Bracelet',
+    brand: 'TULIP BIJOUX',
+    price: 95,
+    image: 'https://images.unsplash.com/photo-1573408301185-9146fe634ad0?w=800&q=80',
+    gender: 'Women',
+    masterCategory: 'Accessories',
+    subCategory: 'Jewellery',
+    articleType: 'Bracelets',
+    baseColour: 'Rose Gold',
+    season: 'Spring',
+    year: 2026,
+    usage: 'Casual',
+    category: 'accessories',
+    rating: 4.6,
+    reviews: 201,
+    isNew: true,
+    colors: ['#E8B4B8', '#F8C8DC'],
+    description: 'Delicate rose gold charm bracelet with tulip pendant.',
+    material: 'Rose Gold',
+  },
+  {
+    id: '16',
+    name: 'Cashmere Coat',
+    brand: 'TULIP ATELIER',
+    price: 680,
+    originalPrice: 850,
+    image: 'https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=800&q=80',
+    hoverImage: 'https://images.unsplash.com/photo-1548624313-0396c75e4b1a?w=800&q=80',
+    gender: 'Women',
+    masterCategory: 'Apparel',
+    subCategory: 'Topwear',
+    articleType: 'Coats',
+    baseColour: 'Blush',
+    season: 'Winter',
+    year: 2026,
+    usage: 'Smart Casual',
+    category: 'women',
+    rating: 4.8,
+    reviews: 167,
+    isAIPick: true,
+    colors: ['#F8C8DC', '#E8DCC8', '#1a1a1a'],
+    sizes: ['XS', 'S', 'M', 'L'],
+    description: 'Luxurious cashmere coat in soft blush.',
+    material: 'Cashmere',
+    fit: 'Classic',
+  },
+  {
+    id: '17',
+    name: 'Kids Tutu Skirt',
+    brand: 'PETITE FLEUR',
+    price: 65,
+    image: 'https://images.unsplash.com/photo-1503919545889-aef636e10ad4?w=800&q=80',
+    gender: 'Girls',
+    masterCategory: 'Apparel',
+    subCategory: 'Bottomwear',
+    articleType: 'Skirts',
+    baseColour: 'Pink',
+    season: 'Spring',
+    year: 2026,
+    usage: 'Party',
+    category: 'kids',
+    rating: 4.9,
+    reviews: 89,
+    isNew: true,
+    colors: ['#F8C8DC', '#FFB6C1'],
+    sizes: ['2Y', '4Y', '6Y'],
+    description: 'Magical tutu skirt for little dancers.',
+    material: 'Tulle',
+  },
+  {
+    id: '18',
+    name: 'Silk Scarf',
+    brand: 'PÉTALE',
+    price: 120,
+    image: 'https://images.unsplash.com/photo-1601924994987-69e26d50dc64?w=800&q=80',
+    gender: 'Women',
+    masterCategory: 'Accessories',
+    subCategory: 'Scarves',
+    articleType: 'Scarves',
+    baseColour: 'Multi',
+    season: 'Spring',
+    year: 2026,
+    usage: 'Smart Casual',
+    category: 'accessories',
+    rating: 4.7,
+    reviews: 156,
+    isTrending: true,
+    colors: ['#F8C8DC', '#E8B4B8', '#FFF0F5'],
+    description: 'Hand-painted silk scarf with floral tulip motif.',
+    material: 'Mulberry Silk',
+  },
+  {
+    id: '19',
+    name: 'Rose Face Mist',
+    brand: 'TULIP GLOW',
+    price: 38,
+    image: 'https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=800&q=80',
+    gender: 'Unisex',
+    masterCategory: 'Personal Care',
+    subCategory: 'Skin',
+    articleType: 'Mist',
+    baseColour: 'Pink',
+    season: 'Summer',
+    year: 2026,
+    usage: 'Casual',
+    category: 'beauty',
+    rating: 4.6,
+    reviews: 445,
+    description: 'Refreshing rose water mist for all-day glow.',
+  },
+  {
+    id: '20',
+    name: 'Canvas Sneakers',
+    brand: 'BLOOM & CO',
+    price: 110,
+    image: 'https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=800&q=80',
+    gender: 'Unisex',
+    masterCategory: 'Footwear',
+    subCategory: 'Shoes',
+    articleType: 'Sneakers',
+    baseColour: 'White',
+    season: 'Summer',
+    year: 2026,
+    usage: 'Casual',
+    category: 'footwear',
+    rating: 4.5,
+    reviews: 267,
+    colors: ['#FFFFFF', '#F8C8DC'],
+    sizes: ['36', '37', '38', '39', '40', '41', '42', '43', '44'],
+    description: 'Clean canvas sneakers with blush accents.',
+    material: 'Canvas',
+  },
+];
+
+// Initialize export with fallback items
+products.push(...fallbackProducts);
+
+export const categories = [
+  {
+    id: 'women',
+    name: 'Women',
+    image: 'https://images.pexels.com/photos/10669645/pexels-photo-10669645.jpeg',
+    description: 'Elegant pieces for the modern woman',
+  },
+  {
+    id: 'men',
+    name: 'Men',
+    image: 'https://images.pexels.com/photos/4611684/pexels-photo-4611684.jpeg',
+    description: 'Refined style for the contemporary man',
+  },
+  {
+    id: 'Boys',
+    name: 'Boys',
+    image: 'https://images.pexels.com/photos/1619773/pexels-photo-1619773.jpeg',
+    description: 'Playful fashion for little ones',
+  },
+  {
+    id: 'Girls',
+    name: 'Girls',
+    image: 'https://images.pexels.com/photos/7788335/pexels-photo-7788335.jpeg',
+    description: 'Cute styles for young ladies',
+  },
+  {
+    id: 'accessories',
+    name: 'Accessories',
+    image: 'https://images.pexels.com/photos/18220122/pexels-photo-18220122.jpeg',
+    description: 'Complete your look with curated pieces',
+  },
+  {
+    id: 'footwear',
+    name: 'Footwear',
+    image: 'https://images.pexels.com/photos/2731977/pexels-photo-2731977.jpeg',
+    description: 'Step out in style and comfort',
+  },
+  {
+    id: 'beauty',
+    name: 'Beauty',
+    image: 'https://images.pexels.com/photos/7852678/pexels-photo-7852678.jpeg',
+    description: 'Glow with our rose-infused skincare',
+  },
+];
+
+export const lifestyleImages = [
+  { id: '1', src: 'https://www.pexels.com/download/video/8688593/', alt: 'Fashion lifestyle' },
+  { id: '2', src: 'https://www.pexels.com/download/video/5889058/', alt: 'Spring collection' },
+  { id: '3', src: 'https://www.pexels.com/download/video/4762565/', alt: 'High fashion' },
+  { id: '4', src: 'https://www.pexels.com/download/video/8154493/', alt: 'Shopping experience' },
+  { id: '5', src: 'https://www.pexels.com/download/video/9149338/', alt: 'Fashion editorial' },
+  { id: '6', src: 'https://www.pexels.com/download/video/6778888/', alt: 'Runway style' },
+];

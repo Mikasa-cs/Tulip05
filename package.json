@@ -1,0 +1,10 @@
+{
+  "name": "tulip-workspace",
+  "private": true,
+  "scripts": {
+    "dev": "npm --prefix ./tulip-v0.7/tulip-v0.7 run dev",
+    "build": "npm --prefix ./tulip-v0.7/tulip-v0.7 run build",
+    "lint": "npm --prefix ./tulip-v0.7/tulip-v0.7 run lint",
+    "test": "npm --prefix ./tulip-v0.7/tulip-v0.7 run test"
+  }
+}

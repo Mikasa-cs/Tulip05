@@ -1,0 +1,2 @@
+-- Optional local seed placeholder.
+-- Product data can be loaded with: node scripts/seedProductsToSupabase.mjs

@@ -1,0 +1,150 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // User authentication check function
+    function isAuth() {
+      return request.auth != null;
+    }
+
+    function isUser(uid) {
+      return request.auth.uid == uid;
+    }
+
+    function isAdmin() {
+      return request.auth.token.admin == true;
+    }
+
+    // ─── Profiles ───────────────────────────────────────────────────────────
+    match /profiles/{userId} {
+      // Users can read and write their own profile
+      allow read: if isUser(userId);
+      allow write: if isUser(userId);
+      
+      // Admins can read all profiles
+      allow read: if isAdmin();
+    }
+
+    // ─── Products ───────────────────────────────────────────────────────────
+    match /products/{productId} {
+      // Anyone can read products
+      allow read: if true;
+      
+      // Only admins can write products
+      allow write: if isAdmin();
+    }
+
+    // ─── Cart Items ─────────────────────────────────────────────────────────
+    match /cartItems/{itemId} {
+      // Only the owning user can read/write their cart items
+      allow read: if isAuth() && resource.data.userId == request.auth.uid;
+      allow create: if isAuth() && request.resource.data.userId == request.auth.uid;
+      allow update: if isAuth() && resource.data.userId == request.auth.uid;
+      allow delete: if isAuth() && resource.data.userId == request.auth.uid;
+    }
+
+    // ─── Wishlist Items ─────────────────────────────────────────────────────
+    match /wishlistItems/{itemId} {
+      // Only the owning user can read/write their wishlist items
+      allow read: if isAuth() && resource.data.userId == request.auth.uid;
+      allow create: if isAuth() && request.resource.data.userId == request.auth.uid;
+      allow update: if isAuth() && resource.data.userId == request.auth.uid;
+      allow delete: if isAuth() && resource.data.userId == request.auth.uid;
+    }
+
+    // ─── Addresses ──────────────────────────────────────────────────────────
+    match /addresses/{addressId} {
+      allow read: if isAuth() && resource.data.userId == request.auth.uid;
+      allow create: if isAuth() && request.resource.data.userId == request.auth.uid;
+      allow update: if isAuth() && resource.data.userId == request.auth.uid;
+      allow delete: if isAuth() && resource.data.userId == request.auth.uid;
+    }
+
+    // ─── Orders ─────────────────────────────────────────────────────────────
+    match /orders/{orderId} {
+      // Users can read their own orders
+      allow read: if isAuth() && resource.data.userId == request.auth.uid;
+      
+      // Orders are created/updated by Firebase Admin SDK (bypasses rules)
+      // Users can create their own orders
+      allow create: if isAuth() && request.resource.data.userId == request.auth.uid;
+      
+      // Admins can read and update all orders
+      allow read: if isAdmin();
+      allow update: if isAdmin();
+    }
+
+    // ─── Order Items ────────────────────────────────────────────────────────
+    match /orderItems/{itemId} {
+      // Only the order owner or admin can read order items
+      allow read: if isAuth() && resource.data.userId == request.auth.uid;
+      allow read: if isAdmin();
+      allow write: if isAdmin();
+    }
+
+    // ─── Checkout Sessions ──────────────────────────────────────────────────
+    match /checkoutSessions/{sessionId} {
+      // Only the owning user can read their checkout sessions
+      allow read: if isAuth() && resource.data.userId == request.auth.uid;
+      // Only the owning user can create their own sessions
+      allow create: if isAuth() && request.resource.data.userId == request.auth.uid;
+      // Admins can update checkout sessions
+      allow update: if isAdmin();
+    }
+
+    // ─── Chat Rooms ─────────────────────────────────────────────────────────
+    match /chatRooms/{roomId} {
+      allow read: if isAuth();
+      allow create: if isAuth();
+      allow update: if isAdmin();
+      
+      // ─── Chat Messages Subcollection ───────────────────────────────────
+      match /messages/{messageId} {
+        allow read: if isAuth();
+        allow create: if isAuth() && request.resource.data.userId == request.auth.uid;
+        allow delete: if isUser(resource.data.userId) || isAdmin();
+      }
+    }
+
+    // ─── Chat Room Members ──────────────────────────────────────────────────
+    match /chatRoomMembers/{memberId} {
+      allow read: if isAuth();
+      allow create: if isAuth();
+      allow delete: if isUser(resource.data.userId) || isAdmin();
+    }
+
+    // ─── Chat Messages (Deprecated - use chatRooms/{roomId}/messages) ─────
+    // Kept for backward compatibility only. New messages use subcollections.
+    match /chatMessages/{messageId} {
+      allow read: if isAuth();
+      allow create: if isAuth() && request.resource.data.userId == request.auth.uid;
+      allow delete: if isUser(resource.data.userId) || isAdmin();
+    }
+
+    // ─── Product Reviews ────────────────────────────────────────────────────
+    match /productReviews/{reviewId} {
+      allow read: if true;
+      allow create: if isAuth();
+      allow update: if isUser(resource.data.userId);
+      allow delete: if isUser(resource.data.userId) || isAdmin();
+    }
+
+    // ─── Recommendation Events ──────────────────────────────────────────────
+    match /recommendationEvents/{eventId} {
+      allow write: if isAuth() && request.resource.data.userId == request.auth.uid;
+      allow read: if isAdmin();
+    }
+
+    // ─── User Recommendations ───────────────────────────────────────────────
+    match /userRecommendations/{recId} {
+      allow read: if isAuth() && resource.data.userId == request.auth.uid;
+      allow read: if isAdmin();
+      allow write: if isAdmin();
+    }
+
+    // ─── Admin Audit Logs ───────────────────────────────────────────────────
+    match /adminAuditLogs/{logId} {
+      allow read: if isAdmin();
+      allow write: if isAdmin();
+    }
+  }
+}

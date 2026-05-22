@@ -1,0 +1,367 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Tulip Soft Pink Palette */
+    --background: 340 30% 98%;
+    --foreground: 340 10% 8%;
+
+    --card: 340 25% 96%;
+    --card-foreground: 340 10% 8%;
+
+    --popover: 340 30% 98%;
+    --popover-foreground: 340 10% 8%;
+
+    /* Pink accent */
+    --primary: 340 70% 65%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 340 20% 93%;
+    --secondary-foreground: 340 10% 15%;
+
+    --muted: 340 15% 90%;
+    --muted-foreground: 340 8% 45%;
+
+    --accent: 340 70% 65%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 340 18% 90%;
+    --input: 340 18% 90%;
+    --ring: 340 70% 65%;
+
+    --radius: 0.75rem;
+
+    /* Custom tokens */
+    --tulip: 340 70% 65%;
+    --tulip-light: 340 60% 78%;
+    --tulip-dark: 340 75% 50%;
+    --blush: 340 30% 98%;
+    --blush-dark: 340 25% 93%;
+    --charcoal: 340 10% 12%;
+    --charcoal-light: 340 8% 25%;
+
+    /* Gradients */
+    --gradient-tulip: linear-gradient(135deg, hsl(340 70% 65%), hsl(340 60% 78%));
+    --gradient-dark: linear-gradient(135deg, hsl(340 10% 8%), hsl(340 10% 15%));
+    --gradient-blush: linear-gradient(180deg, hsl(340 30% 98%), hsl(340 25% 93%));
+    --gradient-hero: linear-gradient(135deg, hsl(340 30% 98%) 0%, hsl(340 25% 93%) 50%, hsl(340 30% 98%) 100%);
+
+    /* Shadows */
+    --shadow-soft: 0 4px 20px -4px hsl(340 70% 65% / 0.1);
+    --shadow-medium: 0 8px 30px -8px hsl(340 70% 65% / 0.15);
+    --shadow-tulip: 0 4px 20px -4px hsl(340 70% 65% / 0.3);
+    --shadow-product: 0 10px 40px -10px hsl(340 70% 65% / 0.2);
+
+    /* Typography */
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-body: 'Poppins', system-ui, sans-serif;
+
+    /* Transitions */
+    --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    --transition-fast: all 0.2s ease-out;
+
+    /* Sidebar */
+    --sidebar-background: 340 30% 98%;
+    --sidebar-foreground: 340 10% 20%;
+    --sidebar-primary: 340 70% 65%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 340 25% 93%;
+    --sidebar-accent-foreground: 340 10% 15%;
+    --sidebar-border: 340 18% 90%;
+    --sidebar-ring: 340 70% 65%;
+  }
+
+  .dark {
+    --background: 340 10% 5%;
+    --foreground: 340 20% 95%;
+
+    --card: 340 10% 8%;
+    --card-foreground: 340 20% 95%;
+
+    --popover: 340 10% 8%;
+    --popover-foreground: 340 20% 95%;
+
+    --primary: 340 60% 70%;
+    --primary-foreground: 340 10% 5%;
+
+    --secondary: 340 10% 12%;
+    --secondary-foreground: 340 20% 95%;
+
+    --muted: 340 8% 15%;
+    --muted-foreground: 340 15% 60%;
+
+    --accent: 340 60% 70%;
+    --accent-foreground: 340 10% 5%;
+
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 340 8% 15%;
+    --input: 340 8% 15%;
+    --ring: 340 60% 70%;
+
+    --tulip: 340 60% 70%;
+    --tulip-light: 340 55% 78%;
+    --tulip-dark: 340 68% 62%;
+    --blush: 340 10% 10%;
+    --blush-dark: 340 10% 14%;
+    --charcoal: 340 15% 92%;
+    --charcoal-light: 340 12% 74%;
+
+    --gradient-tulip: linear-gradient(135deg, hsl(340 60% 62%), hsl(340 58% 74%));
+    --gradient-dark: linear-gradient(135deg, hsl(340 10% 7%), hsl(340 10% 12%));
+    --gradient-blush: linear-gradient(180deg, hsl(340 10% 7%), hsl(340 10% 10%));
+    --gradient-hero: linear-gradient(135deg, hsl(340 10% 7%) 0%, hsl(340 10% 10%) 50%, hsl(340 10% 8%) 100%);
+
+    --shadow-soft: 0 6px 24px -8px hsl(340 70% 65% / 0.25);
+    --shadow-medium: 0 12px 36px -12px hsl(340 70% 65% / 0.3);
+    --shadow-tulip: 0 8px 28px -10px hsl(340 70% 65% / 0.45);
+    --shadow-product: 0 18px 48px -16px hsl(340 70% 65% / 0.35);
+
+    --sidebar-background: 340 10% 6%;
+    --sidebar-foreground: 340 15% 90%;
+    --sidebar-primary: 340 60% 70%;
+    --sidebar-primary-foreground: 340 10% 5%;
+    --sidebar-accent: 340 8% 12%;
+    --sidebar-accent-foreground: 340 15% 90%;
+    --sidebar-border: 340 8% 15%;
+    --sidebar-ring: 340 60% 70%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-body);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+  }
+}
+
+@layer components {
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-muted/50;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground/20 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground/40;
+  }
+
+  /* Horizontal scroll container */
+  .horizontal-scroll-container {
+    overflow-x: hidden;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* B&W to Color effect */
+  .bw-to-color {
+    filter: grayscale(100%);
+    transition: filter 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .bw-to-color:hover {
+    filter: grayscale(0%);
+    transform: scale(1.03);
+  }
+
+  /* Luxury underline */
+  .luxury-underline {
+    @apply relative inline-block;
+  }
+
+  .luxury-underline::after {
+    content: '';
+    @apply absolute bottom-0 left-0 w-0 h-[1px] bg-primary transition-all duration-500;
+  }
+
+  .luxury-underline:hover::after {
+    @apply w-full;
+  }
+
+  /* Product card hover */
+  .product-card-hover {
+    @apply transition-all duration-500;
+  }
+
+  .product-card-hover:hover {
+    box-shadow: var(--shadow-product);
+  }
+
+  /* Tulip shimmer animation */
+  @keyframes tulip-shimmer {
+    0% {
+      background-position: -200% center;
+    }
+    100% {
+      background-position: 200% center;
+    }
+  }
+
+  .tulip-shimmer {
+    background: linear-gradient(
+      90deg,
+      hsl(var(--primary)) 0%,
+      hsl(var(--tulip-light)) 50%,
+      hsl(var(--primary)) 100%
+    );
+    background-size: 200% auto;
+    animation: tulip-shimmer 3s linear infinite;
+  }
+
+  /* Float animation */
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  /* Pulse glow */
+  @keyframes pulse-glow {
+    0%, 100% {
+      box-shadow: 0 0 20px hsl(var(--primary) / 0.3);
+    }
+    50% {
+      box-shadow: 0 0 40px hsl(var(--primary) / 0.5);
+    }
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 3s ease-in-out infinite;
+  }
+
+  /* Marquee */
+  @keyframes marquee {
+    0% {
+      transform: translate3d(0, 0, 0);
+    }
+    100% {
+      transform: translate3d(-50%, 0, 0);
+    }
+  }
+
+  .animate-marquee {
+    animation: marquee 30s linear infinite;
+    will-change: transform;
+    backface-visibility: hidden;
+  }
+
+  .animate-marquee-fast {
+    animation: marquee 22s linear infinite;
+    will-change: transform;
+    backface-visibility: hidden;
+  }
+
+  /* Skeleton shimmer */
+  @keyframes skeleton-shimmer {
+    0% {
+      background-position: -200px 0;
+    }
+    100% {
+      background-position: calc(200px + 100%) 0;
+    }
+  }
+
+  .skeleton-shimmer {
+    background: linear-gradient(
+      90deg,
+      hsl(var(--muted)) 0%,
+      hsl(var(--muted-foreground) / 0.1) 50%,
+      hsl(var(--muted)) 100%
+    );
+    background-size: 200px 100%;
+    animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  }
+}
+
+@layer utilities {
+  .text-gradient-tulip {
+    @apply bg-clip-text text-transparent;
+    background-image: var(--gradient-tulip);
+  }
+
+  .bg-gradient-tulip {
+    background-image: var(--gradient-tulip);
+  }
+
+  .bg-gradient-dark {
+    background-image: var(--gradient-dark);
+  }
+
+  .bg-gradient-blush {
+    background-image: var(--gradient-blush);
+  }
+
+  .bg-gradient-hero {
+    background-image: var(--gradient-hero);
+  }
+
+  .shadow-soft {
+    box-shadow: var(--shadow-soft);
+  }
+
+  .shadow-medium {
+    box-shadow: var(--shadow-medium);
+  }
+
+  .shadow-tulip {
+    box-shadow: var(--shadow-tulip);
+  }
+
+  .shadow-product {
+    box-shadow: var(--shadow-product);
+  }
+
+  .font-display {
+    font-family: var(--font-display);
+  }
+
+  .font-body {
+    font-family: var(--font-body);
+  }
+}
